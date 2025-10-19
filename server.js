@@ -66,7 +66,7 @@ app.get('/api/test-brevo', (req, res) => {
   }
 });
 
-// Contact form email route - FIXED VERSION
+// In your server.js - FIXED Brevo setup
 app.post('/api/send-email', async (req, res) => {
   console.log('=== EMAIL ENDPOINT HIT ===');
   
@@ -94,16 +94,13 @@ app.post('/api/send-email', async (req, res) => {
 
     console.log('Initializing Brevo API...');
 
-    // Initialize Brevo - FIXED SYNTAX
-    const defaultClient = brevo.ApiClient.instance;
-    console.log('Brevo ApiClient instance:', defaultClient);
+    // FIXED: Use the correct Brevo initialization
+    const apiInstance = new brevo.TransactionalEmailsApi();
     
-    const apiKey = defaultClient.authentications['api-key'];
-    apiKey.apiKey = process.env.BREVO_API_KEY;
+    // Configure API key authorization: api-key
+    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-    const transactionalEmailsApi = new brevo.TransactionalEmailsApi();
-
-    // Create email
+    // Create sendSmtpEmail object
     const sendSmtpEmail = new brevo.SendSmtpEmail();
     
     sendSmtpEmail.subject = `New Contact from ${fullName}`;
@@ -135,7 +132,7 @@ app.post('/api/send-email', async (req, res) => {
     console.log('Sending email via Brevo...');
     
     // Send email
-    const result = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log('✅ Email sent successfully:', result);
 
     res.status(200).json({ 

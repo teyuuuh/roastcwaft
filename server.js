@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Add both common React ports
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://roastcwaft-frontend.vercel.app' ], // Add both common React ports
   credentials: true
 }));
 app.use(express.json());
@@ -44,10 +44,10 @@ app.post('/api/send-email', async (req, res) => {
     businessEmail.subject = `New Contact Form Message from ${fullName}`;
     businessEmail.sender = { 
       name: 'Roast Cwaft Website', 
-      email: 'noreply@roastcwaft.com' 
+      email: 'tmtawagon21@gmail.com' 
     };
     businessEmail.to = [{ 
-      email: 'roastcwaft@gmail.com', 
+      email: 'tmtawagon21@gmail.com', 
       name: 'Roast Cwaft Team' 
     }];
     businessEmail.replyTo = { 

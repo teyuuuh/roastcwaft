@@ -1,16 +1,19 @@
-import express, { json } from 'express';
+import express from 'express';
 import cors from 'cors';
-require('dotenv').config();
+import dotenv from 'dotenv';
+import brevo from '@getbrevo/brevo';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Change this to your React app URL
+  origin: ['http://localhost:5173', 'http://localhost:3000'], // Add both common React ports
   credentials: true
 }));
-app.use(json());
+app.use(express.json());
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -29,9 +32,6 @@ app.post('/api/send-email', async (req, res) => {
   }
 
   try {
-    // Import Brevo
-    const brevo = require('@getbrevo/brevo');
-
     // Initialize Brevo API client
     const defaultClient = brevo.ApiClient.instance;
     const apiKey = defaultClient.authentications['api-key'];

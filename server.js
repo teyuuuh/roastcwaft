@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// CORRECT Brevo import - use named imports
-import { ApiClient, TransactionalEmailsApi, SendSmtpEmail } from '@getbrevo/brevo';
+// CORRECT Brevo import for CommonJS module
+import brevo from '@getbrevo/brevo';
 
 dotenv.config();
 
@@ -42,10 +42,21 @@ app.get('/api/test-brevo', (req, res) => {
     }
 
     // Test Brevo initialization
-    const defaultClient = ApiClient.instance;
+    const defaultClient = brevo.ApiClient.instance;
     console.log('Brevo ApiClient:', defaultClient);
     
+    // Check if authentications exists
+    if (!defaultClient.authentications) {
+      throw new Error('Brevo authentications is undefined');
+    }
+    
     const apiKey = defaultClient.authentications['api-key'];
+    
+    // Check if api-key authentication exists
+    if (!apiKey) {
+      throw new Error('api-key authentication not found in Brevo client');
+    }
+    
     apiKey.apiKey = process.env.BREVO_API_KEY;
     
     console.log('Brevo configured successfully');
@@ -91,20 +102,29 @@ app.post('/api/send-email', async (req, res) => {
 
     console.log('Initializing Brevo API...');
 
-    // **FIXED: Correct Brevo initialization with named imports**
-    const defaultClient = ApiClient.instance;
+    // **FIXED: Using default import with proper checks**
+    const defaultClient = brevo.ApiClient.instance;
     
     if (!defaultClient) {
-      throw new Error('ApiClient.instance is undefined - check Brevo package import');
+      throw new Error('ApiClient.instance is undefined - check Brevo package');
+    }
+    
+    if (!defaultClient.authentications) {
+      throw new Error('Brevo authentications is undefined');
     }
     
     const apiKey = defaultClient.authentications['api-key'];
+    
+    if (!apiKey) {
+      throw new Error('api-key authentication not found in Brevo client');
+    }
+    
     apiKey.apiKey = process.env.BREVO_API_KEY;
 
-    const apiInstance = new TransactionalEmailsApi();
+    const apiInstance = new brevo.TransactionalEmailsApi();
     
     // Create sendSmtpEmail object
-    const sendSmtpEmail = new SendSmtpEmail();
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
     
     sendSmtpEmail.subject = `New Contact from ${fullName}`;
     sendSmtpEmail.sender = { 

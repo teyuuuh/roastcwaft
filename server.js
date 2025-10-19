@@ -66,14 +66,11 @@ app.get('/api/test-brevo', (req, res) => {
   }
 });
 
-// In your server.js - FIXED Brevo setup
 app.post('/api/send-email', async (req, res) => {
   console.log('=== EMAIL ENDPOINT HIT ===');
   
   try {
     const { fullName, email, message } = req.body;
-
-    console.log('Received form data:', { fullName, email, message });
 
     // Basic validation
     if (!fullName || !email || !message) {
@@ -94,19 +91,20 @@ app.post('/api/send-email', async (req, res) => {
 
     console.log('Initializing Brevo API...');
 
-    // FIXED: Use the correct Brevo initialization
+    // **FIXED: Correct Brevo initialization**
+    const defaultClient = brevo.ApiClient.instance;
+    const apiKey = defaultClient.authentications['api-key'];
+    apiKey.apiKey = process.env.BREVO_API_KEY;
+
     const apiInstance = new brevo.TransactionalEmailsApi();
     
-    // Configure API key authorization: api-key
-    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-
     // Create sendSmtpEmail object
     const sendSmtpEmail = new brevo.SendSmtpEmail();
     
     sendSmtpEmail.subject = `New Contact from ${fullName}`;
     sendSmtpEmail.sender = { 
       name: 'Roast Cwaft', 
-      email: 'tmtawagon21@gmail.com' 
+      email: 'tmtawagon21@gmail.com'  // Must be verified in Brevo
     };
     sendSmtpEmail.to = [{ 
       email: 'tmtawagon21@gmail.com',
@@ -121,12 +119,6 @@ app.post('/api/send-email', async (req, res) => {
       <p><strong>Name:</strong> ${fullName}</p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Message:</strong> ${message}</p>
-    `;
-    sendSmtpEmail.textContent = `
-      New Contact Form Submission
-      Name: ${fullName}
-      Email: ${email}
-      Message: ${message}
     `;
 
     console.log('Sending email via Brevo...');

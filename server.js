@@ -2,8 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// CORRECT Brevo import for CommonJS module
-import brevo from '@getbrevo/brevo';
+import * as brevo from '@getbrevo/brevo';
 
 dotenv.config();
 
